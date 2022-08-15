@@ -3,10 +3,26 @@
 <head>
   <title>Parcel Sandbox</title>
   <meta charset="UTF-8"/>
+  <style>
+    html, body {
+      height: 100vh;
+    }
+    body {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    button {
+      transform: scale(5);
+    }
+  </style>
 </head>
 
 <body>
-<button id="btn-start">Print!</button>
+<div>
+  <button id="btn-start">Print</button>
+</div>
 <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
 <script type="module" src="src/index.js"></script>
 </body>
