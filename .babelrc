@@ -1,9 +1,9 @@
 {
   "presets": [
-    "env"
+    "@parcel/babel-preset-env"
   ],
   "plugins": [
-    "transform-runtime"
+    "@babel/plugin-transform-runtime"
   ],
   "parserOpts": {
     "plugins": [
