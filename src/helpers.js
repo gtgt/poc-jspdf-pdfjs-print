@@ -7,7 +7,7 @@ import { faker } from "@faker-js/faker";
 
 function headRows() {
   return [
-    { id: "ID", name: "Name", email: "Email", city: "City", expenses: "Sum" }
+    { id: "ID", name: "Name", email: "Email", city: "City", expenses: "Sum", text: "Text" }
   ];
 }
 
@@ -51,7 +51,8 @@ function bodyRows(rowCount) {
       name: faker.name.findName(),
       email: faker.internet.email(),
       city: faker.address.city(),
-      expenses: faker.finance.amount()
+      expenses: faker.finance.amount(),
+      text: faker.lorem.sentence(100),
     });
   }
   return body;
