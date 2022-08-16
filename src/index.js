@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { headRows, bodyRows } from "./helpers";
 
-function handlePages(page, iframe) {
+var handlePages = (page, iframe, button) => {
   var pdf = page._transport, currPage = page._pageIndex + 1;
   console.info("Page ", currPage, "loaded.", pdf);
 
@@ -20,28 +20,35 @@ function handlePages(page, iframe) {
 
   //Draw it on the canvas
   var renderTask = page.render({canvasContext: context, viewport: viewport});
-  renderTask.promise.then(function () {
+  renderTask.promise.then(()=> {
     console.info("Page rendered");
     //Move to next page
     if (currPage < pdf._numPages) {
-      pdf.getPage(currPage + 1).then(function(page) {
-        handlePages(page, iframe);
+      pdf.getPage(currPage + 1).then((page) => {
+        handlePages(page, iframe, button);
       });
     } else {
       console.info("All pages rendered, printing...");
       iframe.contentWindow.print();
+      // cleanup iframe
+      iframe.remove();
+      button.disabled = false;
     }
   });
-}
+};
 
-document.getElementById('btn-start').addEventListener('click', function() {
-  var iframe = document.createElement('iframe');
+document.getElementById('btn-start').addEventListener('click', (e) => {
+  var button = e.target, iframe = document.createElement('iframe');
+  button.disabled = true;
   // can't use display = none, it won't render...
   iframe.style.width = "0";
   iframe.style.height = "0";
   iframe.style.position = "absolute";
   iframe.style.visibility = "hidden";
   document.body.appendChild(iframe);
+  iframe.contentWindow.addEventListener('beforeprint', (e) => {
+    console.log('Before print', e);
+  });
 
   // Loaded via <script> tag, create shortcut to access PDF.js exports. (GT: pffuuj)
   var pdfjsLib = window["pdfjs-dist/build/pdf"];
@@ -51,23 +58,33 @@ document.getElementById('btn-start').addEventListener('click', function() {
 
   var doc = new jsPDF("p");
 
-  doc.text("Overflow 'ellipsize' with one column with long content", 14, 20);
+  doc.text("Overflow 'ellipsize' with one column with long content", 14, 10);
   doc.autoTable({
     head: headRows(),
     body: bodyRows(10),
-    startY: 25,
+    startY: 15,
     // Default for all columns
     styles: {overflow: "ellipsize", cellWidth: "wrap"},
     // Override the default above for the text column
-    columnStyles: {text: {cellWidth: "auto"}}
+    columnStyles: {notes: {cellWidth: "auto"}}
   });
   doc.text("Overflow 'linebreak' (default) with one column with long content", 14, doc.lastAutoTable.finalY + 10);
   doc.autoTable({
     head: headRows(),
     body: bodyRows(4),
     startY: doc.lastAutoTable.finalY + 15,
-    rowPageBreak: "auto",
+    rowPageBreak: "avoid",
     bodyStyles: {valign: "top"}
+  });
+  doc.addPage();
+  doc.text("Split columns across pages if not fit in a single page.", 14, 10);
+  doc.autoTable({
+    head: headRows(),
+    body: bodyRows(6),
+    startY: 15,
+    columnStyles: {notes: {cellWidth: "auto"}},
+    // split overflowing columns into pages
+    horizontalPageBreak: true
   });
   var blob = doc.output("arraybuffer");
 
@@ -78,8 +95,8 @@ document.getElementById('btn-start').addEventListener('click', function() {
     function(pdf) {
       console.info("PDF loaded");
       // Start rendering...
-      pdf.getPage(1).then(function(page) {
-        handlePages(page, iframe);
+      pdf.getPage(1).then((page)=> {
+        handlePages(page, iframe, button);
       });
     },
     function(reason) {
