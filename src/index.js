@@ -80,9 +80,9 @@ document.getElementById('btn-start').addEventListener('click', (e) => {
   doc.text("Split columns across pages if not fit in a single page.", 14, 10);
   doc.autoTable({
     head: headRows(),
-    body: bodyRows(6),
+    body: bodyRows(15),
     startY: 15,
-    columnStyles: {notes: {cellWidth: "auto"}},
+    cellWidth: "auto",
     // split overflowing columns into pages
     horizontalPageBreak: true
   });
