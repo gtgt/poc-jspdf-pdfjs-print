@@ -13,14 +13,20 @@
       align-items: center;
       justify-content: center;
     }
-    button {
-      transform: scale(5);
+    .center-box {
+      transform: scale(2);
+    }
+    .center-box button {
+      float: right;
+      margin-top: 20px;
     }
   </style>
 </head>
 
 <body>
-<div>
+<form id="print" class="center-box">
+  <div><input type="radio" name="orientation" value="portrait" checked /><label>&nbsp;Portrait</label></div>
+  <div><input type="radio" name="orientation" value="landscape" /><label>&nbsp;Landscape</label></div>
   <button id="btn-start">Print</button>
 </div>
 <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
